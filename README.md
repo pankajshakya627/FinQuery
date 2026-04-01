@@ -8,21 +8,21 @@ Production-grade Retrieval-Augmented Generation system for HDFC Bank Credit Card
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    INDEXING PIPELINE                                        │
 │                                                                             │
-│  📄 Document Upload    →  🔍 Universal Parser  →  ✂️ LangChain Chunker        │
+│  📄 Document Upload    →  🔍 Universal Parser  →  ✂️ LangChain Chunker       │
 │  (PDF/Word/Excel/PPTX/  (Auto-format detection)  (Recursive / Metadata)     │
 │   CSV/JSON/HTML/MD)                                                         │
 │                                                                             │
-│       →  🧮 Sentence Transformers    →  💾 ChromaDB + MongoDB               │
+│       →  🧮 Sentence Transformers    →  💾 ChromaDB + MongoDB                │
 │          (all-MiniLM-L6-v2)              (Vector Store + Metadata)          │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    ONLINE QUERY PATH                                        │
 │                                                                             │
-│  ❓ User Question   →  🧮 Query Embedding   →  🔎 Top-K Retrieval          │
+│  ❓ User Question   →  🧮 Query Embedding   →  🔎 Top-K Retrieval            │
 │  (FastAPI endpoint)     (Same model)            (Cosine similarity)         │
 │                                                                             │
-│       →  📊 Reranking     →  🤖 LLM Generation    →  ✅ Grounded Answer    │
+│       →  📊 Reranking     →  🤖 LLM Generation    →  ✅ Grounded Answer      │
 │          (Score filter)      (Ollama/OpenAI)          (+ Source Citations)  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -89,7 +89,7 @@ hdfc-rag/
 # Clone and setup
 cd hdfc-rag
 python -m venv venv
-source venv/bin/activate
+source .venv/bin/activate
 pip install -r requirements.txt
 
 # Configure
@@ -131,8 +131,8 @@ curl -X POST http://localhost:8000/api/query \
 | Variable              | Default               | Description                       |
 |-----------------------|-----------------------|-----------------------------------|
 | `DATABASE_TYPE`       | `mongodb`             | `mongodb` or `postgres`           |
-| `MONGODB_URL`         | `mongodb://localhost:27017`| MongoDB connection URL        |
-| `LLM_PROVIDER`        | `ollama`              | `ollama`, `openai`, or `azure`       |
+| `MONGODB_URL`         | `mongodb://localhost:27017`| MongoDB connection URL       |
+| `LLM_PROVIDER`        | `ollama`              | `ollama`, `openai`, or `azure`    |
 | `AZURE_OPENAI_API_KEY`| —                     | Azure API key                     |
 | `AZURE_OPENAI_ENDPOINT`| —                    | Azure Endpoint URL                |
 | `LLM_MODEL`           | `qwen2.5:7b`          | Model name for Ollama/OpenAI      |
