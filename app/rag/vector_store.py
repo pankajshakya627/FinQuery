@@ -13,7 +13,7 @@ from uuid import uuid4
 
 import chromadb
 from chromadb.config import Settings as ChromaSettings
-from langchain.schema import Document as LCDocument
+from langchain_core.documents import Document as LCDocument
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores.utils import filter_complex_metadata
 from langchain_chroma import Chroma

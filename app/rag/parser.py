@@ -14,7 +14,7 @@ from langchain_community.document_loaders import (
     UnstructuredHTMLLoader,
     UnstructuredMarkdownLoader,
 )
-from langchain.schema import Document as LCDocument
+from langchain_core.documents import Document as LCDocument
 
 import structlog
 
@@ -86,26 +86,34 @@ class DocumentParser:
 
     @staticmethod
     def _parse_pdf(filepath: str) -> list[LCDocument]:
-        """Parse PDF using PyPDF (handles text-based PDFs)."""
-        loader = PyPDFLoader(filepath)
-        pages = loader.load()
+        """Parse PDF using IBM Docling for high-fidelity layout and table extraction."""
+        from docling.document_converter import DocumentConverter
+        import time
 
-        # Enrich metadata
-        for i, page in enumerate(pages):
-            page.metadata.update({
+        logger.info("docling_conversion_started", filepath=filepath)
+        start_time = time.time()
+        
+        converter = DocumentConverter()
+        result = converter.convert(filepath)
+        
+        # Expert the entire parsed layout to structural Markdown
+        md_text = result.document.export_to_markdown()
+        
+        doc = LCDocument(
+            page_content=md_text,
+            metadata={
                 "source_file": os.path.basename(filepath),
-                "page_number": i + 1,
-                "total_pages": len(pages),
                 "file_type": "pdf",
-            })
-            # Clean content
-            page.page_content = DocumentParser._clean_text(page.page_content)
+                "parsed_by": "docling"
+            }
+        )
 
-        # Filter empty pages
-        pages = [p for p in pages if len(p.page_content.strip()) > 20]
-
-        logger.info("pdf_parsed", pages=len(pages), filepath=filepath)
-        return pages
+        logger.info("docling_conversion_complete", 
+                    filepath=filepath, 
+                    time_seconds=round(time.time() - start_time, 2),
+                    char_count=len(md_text))
+        
+        return [doc]
 
     @staticmethod
     def _parse_text(filepath: str) -> list[LCDocument]:

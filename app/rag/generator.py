@@ -5,9 +5,9 @@ Uses LangChain chains with custom prompts for grounded Q&A.
 Supports: OpenAI, Ollama (local), or any OpenAI-compatible API.
 """
 
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.schema import Document as LCDocument
+from langchain_core.documents import Document as LCDocument
 
 from app.core.config import get_settings
 

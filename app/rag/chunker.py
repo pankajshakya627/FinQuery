@@ -8,10 +8,11 @@ import re
 from typing import Optional
 from uuid import uuid4
 
-from langchain.schema import Document as LCDocument
+from langchain_core.documents import Document as LCDocument
 from langchain_text_splitters import (
     RecursiveCharacterTextSplitter,
     SentenceTransformersTokenTextSplitter,
+    MarkdownHeaderTextSplitter,
 )
 
 from app.core.config import get_settings
@@ -89,8 +90,33 @@ class DocumentChunker:
         all_chunks = []
         chunk_index = 0
 
+        # Check if the document was parsed by Docling (returns Markdown text)
+        is_markdown = any(doc.metadata.get("parsed_by") == "docling" for doc in documents)
+        
+        if is_markdown:
+            # First, split by Markdown headers to keep tables and logical sections fully intact
+            headers_to_split_on = [
+                ("#", "Header 1"),
+                ("##", "Header 2"),
+                ("###", "Header 3"),
+                ("####", "Header 4"),
+            ]
+            md_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_split_on, strip_headers=False)
+            
+            md_docs = []
+            for doc in documents:
+                splits = md_splitter.split_text(doc.page_content)
+                for split in splits:
+                    raw_meta = dict(doc.metadata)
+                    raw_meta.update(split.metadata)
+                    split.metadata = raw_meta
+                    md_docs.append(split)
+            
+            # Reassign for final size-limit processing
+            documents = md_docs
+
         for doc in documents:
-            # Split this page/section
+            # Split this page/section using the standard recursive chunker to enforce strict size limits
             raw_chunks = self._splitter.split_documents([doc])
 
             for chunk in raw_chunks:
