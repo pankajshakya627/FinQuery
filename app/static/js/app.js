@@ -69,8 +69,8 @@ async function sendQuery() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 question: question,
-                top_k: 5,
-                similarity_threshold: 0.3,
+                top_k: parseInt(document.getElementById('topK').value) || 5,
+                similarity_threshold: 0.15,
                 include_sources: true,
                 conversation_id: conversationId,
             }),

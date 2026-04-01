@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     chunk_size: int = 512
     chunk_overlap: int = 50
     top_k_results: int = 5
-    similarity_threshold: float = 0.3
+    similarity_threshold: float = 0.15
 
     upload_dir: str = "./data/uploads"
     max_file_size_mb: int = 50
