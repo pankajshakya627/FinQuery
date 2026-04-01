@@ -76,7 +76,18 @@ hdfc-rag/
 └── .env.example
 ```
 
-## Quick Start
+## 📖 Technical Documentation
+
+For a deeper dive into the system's design, evolution, and folder structure, please refer to the following guides:
+
+*   **[The Journey: Evolution to 2.0](docs/JOURNEY.md)** — Story of the transformation, trials, and resilience.
+*   **[Architecture Details](docs/ARCHITECTURE.md)** — High-level flow, mermaid diagrams, and RAG strategy.
+*   **[Component Guide](docs/COMPONENTS.md)** — A file-by-file reference for the entire repository.
+*   **[Design System: Modern Onyx](docs/DESIGN_SYSTEM.md)** — Logic behind the glassmorphic aesthetic and theme engine.
+
+---
+
+## ⚡ Quick Start
 
 ### 1. Prerequisites
 - Python 3.12+
