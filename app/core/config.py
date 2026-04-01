@@ -8,7 +8,7 @@ from pydantic import computed_field
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore")
 
-    app_name: str = "HDFC RAG Assistant"
+    app_name: str = "FinQuery AI Assistant"
     app_env: str = "development"
     app_host: str = "0.0.0.0"
     app_port: int = 8000
@@ -16,18 +16,18 @@ class Settings(BaseSettings):
 
     postgres_host: str = "localhost"
     postgres_port: int = 5432
-    postgres_db: str = "hdfc_rag"
+    postgres_db: str = "finquery_rag"
     postgres_user: str = "postgres"
     postgres_password: str = "postgres123"
-    database_url: str = "postgresql+asyncpg://postgres:postgres123@localhost:5432/hdfc_rag"
-    database_url_sync: str = "postgresql://postgres:postgres123@localhost:5432/hdfc_rag"
+    database_url: str = "postgresql+asyncpg://postgres:postgres123@localhost:5432/finquery_rag"
+    database_url_sync: str = "postgresql://postgres:postgres123@localhost:5432/finquery_rag"
 
     # MongoDB settings
-    mongodb_url: str = "mongodb://localhost:27017/hdfc_rag"
+    mongodb_url: str = "mongodb://localhost:27017/finquery_rag"
     database_type: str = "mongodb"  # "postgres" or "mongodb"
 
     chroma_persist_dir: str = "./data/chroma_db"
-    chroma_collection_name: str = "hdfc_mitc_docs"
+    chroma_collection_name: str = "finquery_policy_docs"
 
     embedding_model: str = "all-MiniLM-L6-v2"
     embedding_dimension: int = 384

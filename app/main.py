@@ -1,5 +1,5 @@
 """
-HDFC RAG Assistant — FastAPI Application Entry Point.
+FinQuery AI — High Fidelity RAG Assistant
 
 Architecture: FastAPI Backend on Cloud Run
 Endpoints: /ingest, /query, /health + Web UI
@@ -73,12 +73,12 @@ async def lifespan(app: FastAPI):
 # ═══════════════════════════════════════════════════════════════
 
 app = FastAPI(
-    title="HDFC RAG Assistant",
+    title="FinQuery AI Assistant",
     description=(
-        "Production RAG system for HDFC Bank Credit Card MITC document Q&A. "
-        "Built with FastAPI + LangChain + ChromaDB + (PostgreSQL/MongoDB)."
+        "Production high-fidelity RAG system for complex Financial Credit Policy Documents. "
+        "Powered by FinQuery AI Core."
     ),
-    version="1.1.0",
+    version="2.0.0",
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",

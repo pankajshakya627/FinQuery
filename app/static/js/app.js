@@ -1,6 +1,6 @@
 /**
- * HDFC RAG Assistant — Client-side Chat Controller
- * Handles: query submission, message rendering, pipeline animation, health polling
+ * FinQuery Assistant — Client-side Chat Controller
+ * Features: Dark/Light Mode, Pipeline Animation, RAG Querying
  */
 
 const API_BASE = '';
@@ -13,14 +13,53 @@ const messagesContainer = document.getElementById('messagesContainer');
 const welcomeScreen = document.getElementById('welcomeScreen');
 const queryInput = document.getElementById('queryInput');
 const sendBtn = document.getElementById('sendBtn');
+const themeToggle = document.getElementById('themeToggle');
+const themeToggleIcon = document.getElementById('themeToggleIcon');
+const themeToggleText = document.getElementById('themeToggleText');
 
 // ── Initialize ──
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Theme Initialization
+    initTheme();
+
+    // 2. Event Listeners
     queryInput.addEventListener('keydown', handleKeyDown);
     queryInput.addEventListener('input', handleInput);
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
+
+    // 3. Health Checks
     checkHealth();
     setInterval(checkHealth, 30000);
 });
+
+// ── Theme Management ──
+function initTheme() {
+    const savedTheme = localStorage.getItem('finquery-theme') || 'light';
+    applyTheme(savedTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('finquery-theme', theme);
+    
+    if (themeToggleIcon && themeToggleText) {
+        if (theme === 'dark') {
+            themeToggleIcon.textContent = '☀️';
+            themeToggleText.textContent = 'Light Mode';
+        } else {
+            themeToggleIcon.textContent = '🌙';
+            themeToggleText.textContent = 'Dark Mode';
+        }
+    }
+}
 
 // ── Input Handling ──
 function handleKeyDown(e) {
@@ -37,7 +76,10 @@ function handleInput() {
 
     // Character count
     const count = queryInput.value.length;
-    document.getElementById('charCount').textContent = `${count} / 2048`;
+    const charCountEl = document.getElementById('charCount');
+    if (charCountEl) {
+        charCountEl.textContent = `${count} / 2048`;
+    }
 }
 
 // ── Send Query ──
@@ -55,7 +97,9 @@ async function sendQuery() {
     appendMessage('user', question);
     queryInput.value = '';
     queryInput.style.height = 'auto';
-    document.getElementById('charCount').textContent = '0 / 2048';
+    
+    const charCountEl = document.getElementById('charCount');
+    if (charCountEl) charCountEl.textContent = '0 / 2048';
 
     // Show loading
     const loadingEl = appendLoading();
@@ -69,7 +113,7 @@ async function sendQuery() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 question: question,
-                top_k: document.getElementById('topK') ? parseInt(document.getElementById('topK').value) : 5,
+                top_k: 5, // Defaulting to 5 as per new minimal UI
                 similarity_threshold: 0.15,
                 include_sources: true,
                 conversation_id: conversationId,
@@ -93,7 +137,7 @@ async function sendQuery() {
     } catch (err) {
         loadingEl.remove();
         resetPipeline();
-        appendMessage('assistant', `⚠️ Error: ${err.message}. Make sure the FastAPI server is running.`);
+        appendMessage('assistant', `⚠️ Connection Error: ${err.message}. Ensure the backend is running.`);
     }
 
     isLoading = false;
@@ -102,10 +146,11 @@ async function sendQuery() {
 }
 
 // ── Ask from suggested question ──
-function askQuestion(question) {
+window.askQuestion = function(question) {
     queryInput.value = question;
+    handleInput();
     sendQuery();
-}
+};
 
 // ── Message Rendering ──
 function appendMessage(role, content, sources = null, stats = null, timeMs = null) {
@@ -120,14 +165,14 @@ function appendMessage(role, content, sources = null, stats = null, timeMs = nul
     // Sources
     if (sources && sources.length > 0) {
         const sourceSection = document.createElement('div');
-        sourceSection.style.maxWidth = '80%';
+        sourceSection.style.width = '100%';
 
         // Toggle button
         const toggleBtn = document.createElement('button');
         toggleBtn.className = 'sources-toggle';
-        toggleBtn.innerHTML = `▸ ${sources.length} sources retrieved`;
+        toggleBtn.innerHTML = `<span>▸</span> ${sources.length} sources used`;
         if (stats) {
-            toggleBtn.innerHTML += ` • ${stats.total_chunks_searched} chunks searched • ${timeMs ? timeMs.toFixed(0) + 'ms' : ''}`;
+            toggleBtn.title = `${stats.total_chunks_searched} chunks searched in ${timeMs ? timeMs.toFixed(0) + 'ms' : 'N/A'}`;
         }
 
         const panel = document.createElement('div');
@@ -139,10 +184,10 @@ function appendMessage(role, content, sources = null, stats = null, timeMs = nul
             card.className = 'source-card';
             card.innerHTML = `
                 <div class="source-header">
-                    <span class="source-title">${src.section_title || src.document_title || 'Source'}</span>
-                    <span class="source-score">${src.relevance_score.toFixed(3)}</span>
+                    <span class="source-title">${src.section_title || src.document_title || 'Reference'}</span>
+                    <span class="source-score">Relevance: ${src.relevance_score.toFixed(3)}</span>
                 </div>
-                <div class="source-content">${src.content.substring(0, 250)}${src.content.length > 250 ? '...' : ''}</div>
+                <div class="source-content">${src.content.substring(0, 300)}${src.content.length > 300 ? '...' : ''}</div>
             `;
             panel.appendChild(card);
         });
@@ -150,7 +195,7 @@ function appendMessage(role, content, sources = null, stats = null, timeMs = nul
         toggleBtn.addEventListener('click', () => {
             const visible = panel.style.display !== 'none';
             panel.style.display = visible ? 'none' : 'flex';
-            toggleBtn.innerHTML = toggleBtn.innerHTML.replace(visible ? '▾' : '▸', visible ? '▸' : '▾');
+            toggleBtn.querySelector('span').textContent = visible ? '▸' : '▾';
         });
 
         sourceSection.appendChild(toggleBtn);
@@ -159,7 +204,9 @@ function appendMessage(role, content, sources = null, stats = null, timeMs = nul
     }
 
     messagesContainer.appendChild(msgDiv);
-    scrollToBottom();
+    
+    // Smooth scroll with slight delay for animation
+    setTimeout(scrollToBottom, 50);
 }
 
 function appendLoading() {
@@ -191,17 +238,16 @@ function formatMarkdown(text) {
         // Inline code
         .replace(/`([^`]+)`/g, '<code>$1</code>')
         // Headers
-        .replace(/^### (.*$)/gm, '<h4 style="margin: 12px 0 6px; font-size: 14px; color: var(--accent-light);">$1</h4>')
-        .replace(/^## (.*$)/gm, '<h3 style="margin: 14px 0 8px; font-size: 15px;">$1</h3>')
+        .replace(/^### (.*$)/gm, '<h4>$1</h4>')
+        .replace(/^## (.*$)/gm, '<h3>$1</h3>')
         // Bullet points
         .replace(/^[-•] (.*$)/gm, '<li>$1</li>')
-        .replace(/(<li>.*<\/li>\n?)+/g, '<ul style="margin: 8px 0 8px 18px;">$&</ul>')
+        .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
         // Numbered lists
         .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
         // Line breaks
         .replace(/\n\n/g, '</p><p>')
         .replace(/\n/g, '<br>')
-        // Wrap in paragraph
         ;
 }
 
@@ -267,13 +313,13 @@ async function checkHealth() {
         const data = await res.json();
 
         dot.className = `stat-dot ${data.status}`;
-        text.textContent = data.status === 'healthy' ? 'All systems online' : 'Degraded';
+        text.textContent = data.status === 'healthy' ? 'Systems Online' : 'Degraded';
         if (info) {
-            info.textContent = `${data.total_documents} docs • ${data.total_chunks} chunks`;
+            info.textContent = `${data.total_documents} Docs • ${data.total_chunks} Chunks`;
         }
     } catch (e) {
         dot.className = 'stat-dot';
-        text.textContent = 'Server offline';
-        if (info) info.textContent = 'Start: uvicorn app.main:app';
+        text.textContent = 'Server Offline';
+        if (info) info.textContent = 'API Unavailable';
     }
 }

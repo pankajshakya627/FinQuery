@@ -1,38 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ app_name }} — Credit Card Q&A</title>
+    <title>FinQuery — AI-Powered Credit Policy Assistant</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css?v=2">
 </head>
 <body>
     <div class="app-shell">
         <!-- ═══ SIDEBAR ═══ -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo">
-                    <div class="logo-icon">HDFC</div>
+                <a href="/" class="logo">
+                    <div class="logo-icon">FQ</div>
                     <div class="logo-text">
-                        <span class="logo-title">RAG Assistant</span>
-                        <span class="logo-subtitle">Credit Card MITC</span>
+                        <span class="logo-title">FinQuery</span>
+                        <span class="logo-subtitle">AI RAG Assistant</span>
                     </div>
-                </div>
+                </a>
             </div>
 
             <nav class="sidebar-nav">
                 <a href="/" class="nav-item active" data-page="chat">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
                     <span>Chat</span>
                 </a>
                 <a href="/upload" class="nav-item" data-page="upload">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    <span>Upload Docs</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span>Upload</span>
                 </a>
                 <a href="/dashboard" class="nav-item" data-page="dashboard">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
                     <span>Dashboard</span>
                 </a>
             </nav>
@@ -43,11 +44,11 @@
                 <div class="pipeline-steps">
                     <div class="step" id="step-embed">
                         <div class="step-dot"></div>
-                        <span>Query Embedding</span>
+                        <span>Embedding</span>
                     </div>
                     <div class="step" id="step-retrieve">
                         <div class="step-dot"></div>
-                        <span>Top-K Retrieval</span>
+                        <span>Retrieval</span>
                     </div>
                     <div class="step" id="step-rerank">
                         <div class="step-dot"></div>
@@ -55,16 +56,20 @@
                     </div>
                     <div class="step" id="step-generate">
                         <div class="step-dot"></div>
-                        <span>LLM Generation</span>
+                        <span>Generation</span>
                     </div>
                 </div>
             </div>
 
-            <!-- System Info -->
+            <!-- Sidebar Footer -->
             <div class="sidebar-footer">
+                <button class="theme-toggle-btn" id="themeToggle">
+                    <span id="themeToggleIcon">🌙</span>
+                    <span id="themeToggleText">Dark Mode</span>
+                </button>
                 <div class="sys-stat">
                     <span class="stat-dot" id="healthDot"></span>
-                    <span id="healthText">Checking...</span>
+                    <span id="healthText">Connecting...</span>
                 </div>
                 <div class="sys-info" id="sysInfo">—</div>
             </div>
@@ -72,46 +77,30 @@
 
         <!-- ═══ MAIN CONTENT ═══ -->
         <main class="main-content">
-            <!-- Chat Messages -->
+            <!-- Chat Area -->
             <div class="chat-area" id="chatArea">
                 <!-- Welcome Screen -->
                 <div class="welcome" id="welcomeScreen">
-                    <div class="welcome-icon">🏦</div>
-                    <h1>HDFC Credit Card — RAG Q&A</h1>
-                    <p>Ask anything about credit card fees, rewards, charges, limits, and policies. Answers are grounded in the official MITC document.</p>
+                    <div class="welcome-icon">⚡</div>
+                    <h1>FinQuery Assistant</h1>
+                    <p>High-fidelity RAG engine for complex credit policy documents. Ask anything about fees, rewards, or technical clauses.</p>
 
                     <div class="suggested-grid">
                         <button class="suggested-btn" onclick="askQuestion('What is the annual fee for Infinia card and how to get it waived?')">
-                            <span class="sq-icon">💳</span>
-                            Infinia annual fee & waiver
+                            <span class="sq-icon">💎</span>
+                            <span>Infinia Annual Fee & Waiver</span>
                         </button>
-                        <button class="suggested-btn" onclick="askQuestion('What are the late payment charges for HDFC credit cards?')">
-                            <span class="sq-icon">⚠️</span>
-                            Late payment charges
+                        <button class="suggested-btn" onclick="askQuestion('What are the late payment charges for the primary cards?')">
+                            <span class="sq-icon">🕒</span>
+                            <span>Late Payment Charges</span>
                         </button>
                         <button class="suggested-btn" onclick="askQuestion('How does the fuel surcharge waiver work?')">
                             <span class="sq-icon">⛽</span>
-                            Fuel surcharge waiver
+                            <span>Fuel Surcharge Policy</span>
                         </button>
                         <button class="suggested-btn" onclick="askQuestion('What is the interest rate on revolving credit?')">
-                            <span class="sq-icon">📊</span>
-                            Revolving credit interest
-                        </button>
-                        <button class="suggested-btn" onclick="askQuestion('How are reward points calculated and what is their validity?')">
-                            <span class="sq-icon">🎁</span>
-                            Reward points validity
-                        </button>
-                        <button class="suggested-btn" onclick="askQuestion('What should I do if my HDFC credit card is lost or stolen?')">
-                            <span class="sq-icon">🔒</span>
-                            Lost/stolen card process
-                        </button>
-                        <button class="suggested-btn" onclick="askQuestion('What are the foreign currency transaction charges?')">
-                            <span class="sq-icon">🌍</span>
-                            Foreign transaction fees
-                        </button>
-                        <button class="suggested-btn" onclick="askQuestion('What lounge access benefits does Regalia card offer?')">
-                            <span class="sq-icon">✈️</span>
-                            Lounge access benefits
+                            <span class="sq-icon">📈</span>
+                            <span>Revolving Credit Interest</span>
                         </button>
                     </div>
                 </div>
@@ -125,22 +114,27 @@
                 <div class="input-wrapper">
                     <textarea
                         id="queryInput"
-                        placeholder="Ask about HDFC credit card fees, rewards, limits, charges..."
+                        placeholder="Type your question here..."
                         rows="1"
                         maxlength="2048"
                     ></textarea>
-                    <button id="sendBtn" onclick="sendQuery()" title="Send">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    <button id="sendBtn" onclick="sendQuery()" title="Send Message">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                     </button>
                 </div>
                 <div class="input-meta">
-                    <span>FastAPI + LangChain + ChromaDB + PostgreSQL</span>
+                    <span>Precision RAG • Fast AI Answers</span>
                     <span id="charCount">0 / 2048</span>
                 </div>
             </div>
         </main>
     </div>
 
-    <script src="/static/js/app.js?v=2"></script>
+    <!-- Scripting -->
+    <script type="module">
+        import { prepare, layout } from 'https://cdn.jsdelivr.net/npm/@chenglou/pretext/+esm';
+        window.Pretext = { prepare, layout };
+    </script>
+    <script src="/static/js/app.js?v=4"></script>
 </body>
 </html>

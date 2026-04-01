@@ -1,9 +1,6 @@
-"""
-MongoDB connection and utility functions.
-"""
 import motor.motor_asyncio
-from app.core.config import get_settings
 import structlog
+from app.core.config import get_settings
 
 logger = structlog.get_logger(__name__)
 settings = get_settings()
@@ -11,55 +8,47 @@ settings = get_settings()
 class MongoDB:
     client: motor.motor_asyncio.AsyncIOMotorClient = None
     db = None
+    @classmethod
+    def get_db(cls):
+        return cls.db
 
     @classmethod
     async def connect(cls):
-        """Initialize MongoDB connection. Non-fatal — warns if unreachable."""
         if cls.client is not None:
             return
-
+        
         try:
+            logger.info("connecting_mongodb", url=settings.mongodb_url)
             cls.client = motor.motor_asyncio.AsyncIOMotorClient(
                 settings.mongodb_url,
-                serverSelectionTimeoutMS=5000,  # 5s timeout instead of 30s
+                serverSelectionTimeoutMS=5000,
             )
-            db_name = settings.mongodb_url.split('/')[-1] if '/' in settings.mongodb_url else "hdfc_rag"
+            db_name = settings.mongodb_url.split('/')[-1] if '/' in settings.mongodb_url else "finquery_rag"
             cls.db = cls.client[db_name]
 
-            # Verify connection with a short timeout
+            # Verify connection
             await cls.client.admin.command('ping')
-            logger.info("mongodb_connected", url=settings.mongodb_url)
+            logger.info("mongodb_connected", db=db_name)
         except Exception as e:
-            # Non-fatal: warn but don't crash the app
-            logger.warning("mongodb_unavailable_at_startup", error=str(e),
-                           hint="Start MongoDB: brew services start mongodb-community@7.0")
-            # Keep client=None so reconnect is retried on first request
+            logger.error("mongodb_connection_failed", error=str(e))
             cls.client = None
             cls.db = None
+            raise
 
     @classmethod
     async def disconnect(cls):
-        """Close MongoDB connection."""
         if cls.client:
             cls.client.close()
             cls.client = None
             cls.db = None
-            logger.info("mongodb_disconnected")
-
-    @classmethod
-    def get_db(cls):
-        """Return the database instance."""
-        return cls.db
+            logger.info("mongodb_connection_closed")
 
 async def get_mongodb():
-    """Dependency for FastAPI to get MongoDB instance. Auto-reconnects if needed."""
-    if MongoDB.client is None:
+    if MongoDB.db is None:
         await MongoDB.connect()
-    return MongoDB.get_db()
+    return MongoDB.db
 
-
-async def check_mongodb_connection() -> bool:
-    """Check if MongoDB is reachable."""
+async def check_mongodb_connection():
     try:
         if MongoDB.client is None:
             await MongoDB.connect()

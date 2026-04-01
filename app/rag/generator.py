@@ -21,10 +21,10 @@ settings = get_settings()
 #  PROMPT TEMPLATES
 # ═══════════════════════════════════════════════════════════════
 
-SYSTEM_PROMPT = """You are an expert HDFC Bank Credit Card assistant powered by a RAG (Retrieval-Augmented Generation) system. You answer questions about HDFC Bank credit card terms, conditions, fees, charges, rewards, and policies.
+SYSTEM_PROMPT = """You are FinQuery AI, an expert high-fidelity Financial Assistant powered by RAG (Retrieval-Augmented Generation). You specialized in answering questions about complex credit card policies, MITC documents, fees, and rewards with extreme precision.
 
 CRITICAL RULES:
-1. Answer ONLY based on the provided context from HDFC Bank's MITC document
+1. Answer ONLY based on the provided technical context from the financial documents.
 2. If the context doesn't contain sufficient information, clearly state that
 3. Be precise with numbers, fees, percentages, and card names
 4. Use ₹ symbol for Indian Rupees (e.g., ₹10,000 not Rs 10000)
@@ -39,7 +39,7 @@ FORMATTING:
 - Bold important numbers and card names
 - Group information logically (e.g., Premium cards vs Entry-level)"""
 
-QA_PROMPT_TEMPLATE = """Based on the following context from HDFC Bank's Most Important Terms & Conditions (MITC):
+QA_PROMPT_TEMPLATE = """Based on the following extracted context from the credit policy documents:
 
 {context}
 
@@ -182,7 +182,7 @@ class AnswerGenerator:
         """Generate a fallback answer when LLM is unavailable."""
         if not context_docs:
             return (
-                "I couldn't find relevant information in the HDFC Bank MITC document "
+                "I couldn't find relevant information in the indexed policy documents. "
                 "for your question. Please try rephrasing or ask about specific "
                 "credit card fees, charges, rewards, or policies."
             )

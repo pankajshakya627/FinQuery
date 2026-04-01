@@ -1,1 +1,2 @@
-# HDFC RAG Assistant
+# FinQuery AI Assistant
+# High-fidelity RAG engine for financial document analysis.
