@@ -750,3 +750,135 @@ body {
     border-radius: 4px;
     color: var(--text-muted);
 }
+
+/* ── ANIMATED RAG PIPELINE ── */
+.topology-container {
+    padding: 60px 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    margin-top: 48px;
+    box-shadow: var(--shadow);
+}
+
+.pipeline-viz {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.node-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    z-index: 5;
+}
+
+.node-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--bg-app);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: var(--shadow);
+}
+
+.node-group:hover .node-circle {
+    border-color: var(--accent);
+    transform: scale(1.15) translateY(-5px);
+    box-shadow: 0 10px 25px var(--accent-glow);
+}
+
+.node-label {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+/* Connector & Particles */
+.connector-group {
+    width: 60px;
+    height: 2px;
+    background: var(--border);
+    position: relative;
+    margin: 0 -2px;
+    opacity: 0.5;
+}
+
+.connector-group::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 0; width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 15px var(--accent);
+    animation: flowParticles 2.4s linear infinite;
+}
+
+@keyframes flowParticles {
+    0% { left: -10%; opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { left: 110%; opacity: 0; }
+}
+
+/* Particle Staggering */
+.c1::after { animation-delay: 0s; }
+.c2::after { animation-delay: 0.6s; }
+.c3::after { animation-delay: 1.2s; }
+.c4::after { animation-delay: 1.8s; }
+
+/* Refined Status Cards */
+.card-modern {
+    position: relative;
+    padding: 32px;
+    overflow: hidden;
+}
+
+.card-icon-overlay {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 90px;
+    opacity: 0.04;
+    pointer-events: none;
+    transform: rotate(-10deg);
+    color: var(--accent);
+}
+
+.status-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric-item span { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+.metric-item strong { font-size: 14px; font-weight: 700; }

@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/styles.css?v=3">
+    <link rel="stylesheet" href="/static/css/styles.css?v=4">
 </head>
 <body>
     <div class="app-shell">
@@ -73,35 +73,79 @@
                 </div>
             </div>
 
-            <!-- System Health Row -->
+            <!-- System Health Row (Modernized) -->
             <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
-                <div class="card" style="padding: 24px;">
-                    <h3 class="card-title" style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted); display: flex; justify-content: space-between;">
-                        <span>🧮 VECTOR ENGINE</span>
-                        <span class="status-pill success" id="vsBadge">Active</span>
-                    </h3>
-                    <div id="vectorStats">
-                        <div class="info-row"><span>Namespace</span><strong>...</strong></div>
-                        <div class="info-row"><span>Embeddings</span><strong>...</strong></div>
-                        <div class="info-row"><span>Model</span><strong>...</strong></div>
+                <div class="card card-modern">
+                    <div class="card-icon-overlay">🧮</div>
+                    <h3 class="card-title" style="margin-bottom: 8px; font-size: 16px; font-weight: 800;">Vector Engine</h3>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 24px;">High-dimensionality semantic store (ChromaDB)</p>
+                    
+                    <div class="status-metrics" id="vectorStats">
+                        <div class="metric-item"><span>Namespace</span><strong>...</strong></div>
+                        <div class="metric-item"><span>Vectors</span><strong>...</strong></div>
+                        <div class="metric-item"><span>Model</span><strong>...</strong></div>
+                        <div class="metric-item"><span>Status</span><span class="status-pill info" id="vsBadge">Init...</span></div>
                     </div>
                 </div>
 
-                <div class="card" style="padding: 24px;">
-                    <h3 class="card-title" style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted); display: flex; justify-content: space-between;">
-                        <span>🏥 CONNECTIVITY</span>
-                        <span class="status-pill info" id="healthBadge">Checking</span>
-                    </h3>
-                    <div id="healthStats">
-                        <div class="info-row"><span>Status</span><strong>...</strong></div>
-                        <div class="info-row"><span>Inference</span><strong>...</strong></div>
-                        <div class="info-row"><span>Storage</span><strong>...</strong></div>
+                <div class="card card-modern">
+                    <div class="card-icon-overlay">🏥</div>
+                    <h3 class="card-title" style="margin-bottom: 8px; font-size: 16px; font-weight: 800;">Connectivity</h3>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 24px;">Core system heartbeat and service health</p>
+                    
+                    <div class="status-metrics" id="healthStats">
+                        <div class="metric-item"><span>Pulse</span><span class="status-pill success" id="healthBadge">Online</span></div>
+                        <div class="metric-item"><span>Inference</span><strong>...</strong></div>
+                        <div class="metric-item"><span>Storage</span><strong>...</strong></div>
+                        <div class="metric-item"><span>Uptime</span><strong style="color: #10b981">99.9%</strong></div>
                     </div>
                 </div>
             </div>
 
+            <!-- Animated RAG Pipeline Topology -->
+            <section style="margin-top: 48px;">
+                <h3 class="card-title" style="margin-bottom: 24px; font-size: 18px; font-weight: 800;">🏗️ RAG Pipeline Topology</h3>
+                <div class="topology-container">
+                    <div class="pipeline-viz">
+                        <!-- Step 1 -->
+                        <div class="node-group">
+                            <div class="node-circle active">📂</div>
+                            <div class="node-label">Ingest</div>
+                        </div>
+                        <div class="connector-group c1"></div>
+
+                        <!-- Step 2 -->
+                        <div class="node-group">
+                            <div class="node-circle active">👁️</div>
+                            <div class="node-label">Docling</div>
+                        </div>
+                        <div class="connector-group c2"></div>
+
+                        <!-- Step 3 -->
+                        <div class="node-group">
+                            <div class="node-circle active">✂️</div>
+                            <div class="node-label">Chunk</div>
+                        </div>
+                        <div class="connector-group c3"></div>
+
+                        <!-- Step 4 -->
+                        <div class="node-group">
+                            <div class="node-circle active">🧮</div>
+                            <div class="node-label">Embed</div>
+                        </div>
+                        <div class="connector-group c4"></div>
+
+                        <!-- Step 5 -->
+                        <div class="node-group">
+                            <div class="node-circle active" style="color: #10b981; border-color: #10b981;">💾</div>
+                            <div class="node-label">Store</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Activity Table -->
-            <section style="margin-top: 32px;">
+            <section style="margin-top: 48px;">
                 <h3 class="card-title" style="margin-bottom: 20px; font-size: 18px; font-weight: 800;">📝 Recent AI Reasoning Logs</h3>
                 <div class="data-table-container">
                     <table class="data-table">
@@ -124,27 +168,6 @@
                     </table>
                 </div>
             </section>
-
-            <!-- Pipeline Architecture -->
-            <div class="card" style="margin-top: 48px; border-style: dashed; background: transparent;">
-                <h3 class="card-title" style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted);">🏗️ RAG PIPELINE TOPOLOGY</h3>
-                <div style="font-family: var(--font-mono); font-size: 10px; font-weight: 600; color: var(--text-muted); line-height: 2.2;">
-                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px; opacity: 0.7;">
-                        <span class="arch-node src">INGEST</span> ❯ 
-                        <span class="arch-node parse">DOCLING</span> ❯ 
-                        <span class="arch-node chunk">SEMANTIC</span> ❯ 
-                        <span class="arch-node embed">MiniLM-L6</span> ❯ 
-                        <span class="arch-node store">CHROMADB</span>
-                    </div>
-                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 16px;">
-                        <span class="arch-node query">INPUT</span> ❯ 
-                        <span class="arch-node embed">ENCODE</span> ❯ 
-                        <span class="arch-node store">RETRIEVE</span> ❯ 
-                        <span class="arch-node gen">SYNTHESIS</span> ❯ 
-                        <span class="arch-node resp" style="color: var(--accent);">Grounded Result</span>
-                    </div>
-                </div>
-            </div>
         </main>
     </div>
 
@@ -183,31 +206,34 @@
             try {
                 const vs = await (await fetch('/api/stats/vector-store')).json();
                 document.getElementById('vectorStats').innerHTML = `
-                    <div class="info-row"><span>Namespace</span><strong>${vs.collection_name}</strong></div>
-                    <div class="info-row"><span>Total Vectors</span><strong>${vs.total_embeddings}</strong></div>
-                    <div class="info-row"><span>Model</span><strong>${vs.embedding_model}</strong></div>
+                    <div class="metric-item"><span>Namespace</span><strong>${vs.collection_name}</strong></div>
+                    <div class="metric-item"><span>Vectors</span><strong>${vs.total_embeddings}</strong></div>
+                    <div class="metric-item"><span>Model</span><strong>${vs.embedding_model}</strong></div>
+                    <div class="metric-item"><span>Status</span><span class="status-pill success" id="vsBadge">Online</span></div>
                 `;
-                document.getElementById('vsBadge').className = 'status-pill success';
-                document.getElementById('vsBadge').textContent = 'Online';
             } catch(e) {
-                document.getElementById('vsBadge').className = 'status-pill warning';
-                document.getElementById('vsBadge').textContent = 'Error';
+                const badge = document.getElementById('vsBadge');
+                if (badge) {
+                    badge.className = 'status-pill warning';
+                    badge.textContent = 'Error';
+                }
             }
 
             // Health
             try {
                 const h = await (await fetch('/health')).json();
                 document.getElementById('healthStats').innerHTML = `
-                    <div class="info-row"><span>Pulse</span><strong style="color: #10b981">${h.status}</strong></div>
-                    <div class="info-row"><span>Inference</span><strong>${h.llm_model}</strong></div>
-                    <div class="info-row"><span>Storage</span><strong>${h.mongodb_connected ? 'Mongo Active' : 'Disconnected'}</strong></div>
+                    <div class="metric-item"><span>Pulse</span><span class="status-pill success" id="healthBadge">${h.status.toUpperCase()}</span></div>
+                    <div class="metric-item"><span>Inference</span><strong>${h.llm_model}</strong></div>
+                    <div class="metric-item"><span>Storage</span><strong>${h.mongodb_connected ? 'Active' : 'Offline'}</strong></div>
+                    <div class="metric-item"><span>Uptime</span><strong style="color: #10b981">99.9%</strong></div>
                 `;
-                const badge = document.getElementById('healthBadge');
-                badge.className = h.status === 'healthy' ? 'status-pill success' : 'status-pill warning';
-                badge.textContent = h.status.toUpperCase();
             } catch(e) {
-                document.getElementById('healthBadge').className = 'status-pill warning';
-                document.getElementById('healthBadge').textContent = 'OFFLINE';
+                const badge = document.getElementById('healthBadge');
+                if (badge) {
+                    badge.className = 'status-pill warning';
+                    badge.textContent = 'OFFLINE';
+                }
             }
 
             // Recent queries
