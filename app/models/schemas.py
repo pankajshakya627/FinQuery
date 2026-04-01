@@ -140,11 +140,13 @@ class IndexingResult(BaseModel):
 class HealthCheck(BaseModel):
     status: str = "healthy"
     postgres_connected: bool = False
+    mongodb_connected: bool = False
     chroma_connected: bool = False
     total_documents: int = 0
     total_chunks: int = 0
     embedding_model: str = ""
     llm_model: str = ""
+    database_type: str = "mongodb"
     uptime_seconds: float = 0.0
 
 class SystemStats(BaseModel):
