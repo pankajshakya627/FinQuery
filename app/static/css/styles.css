@@ -751,6 +751,103 @@ body {
     color: var(--text-muted);
 }
 
+/* ── MODERN UPLOAD & INGESTION ── */
+.dropzone-modern {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    padding: 60px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.dropzone-modern:hover, .dropzone-modern.dragover {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    transform: scale(1.01);
+}
+
+.dropzone-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.dropzone-modern.dragover .dropzone-icon {
+    animation: iconPulse 1s infinite alternate;
+}
+
+@keyframes iconPulse {
+    from { transform: scale(1); filter: drop-shadow(0 0 0 var(--accent)); }
+    to { transform: scale(1.2); filter: drop-shadow(0 0 20px var(--accent)); }
+}
+
+.input-modern {
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--bg-app);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-main);
+    transition: all 0.3s;
+}
+
+.input-modern:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+.form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.btn-danger-sm {
+    padding: 6px 12px;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-danger-sm:hover {
+    background: #ef4444;
+    color: white;
+}
+
+.alert {
+    padding: 16px 20px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 20px;
+    animation: alertSlideIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.alert-success { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+.alert-error { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+@keyframes alertSlideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* ── ANIMATED RAG PIPELINE ── */
 .topology-container {
     padding: 60px 40px;

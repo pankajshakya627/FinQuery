@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload — FinQuery AI</title>
+    <title>Ingestion — FinQuery AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/styles.css?v=2">
+    <link rel="stylesheet" href="/static/css/styles.css?v=5">
 </head>
 <body>
     <div class="app-shell">
@@ -40,69 +40,91 @@
         <main class="main-content" style="padding: 40px; overflow-y: auto;">
             <header style="margin-bottom: 48px;">
                 <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px;">Document Ingestion</h1>
-                <p style="color: var(--text-muted); font-size: 16px;">Transform messy PDFs into high-fidelity searchable knowledge base using AI-driven parsing.</p>
+                <p style="color: var(--text-muted); font-size: 16px;">Expand the FinQuery knowledge base with high-fidelity document parsing and vector indexing.</p>
             </header>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 32px;">
-                <!-- Upload Form -->
-                <div class="card">
-                    <h3 class="card-title" style="margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
-                        <span>📄</span> New Document
-                    </h3>
-                    <form id="uploadForm" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label>Internal Title</label>
-                            <input type="text" name="title" required placeholder="e.g. Credit Card Policy 2026">
-                        </div>
-                        <div class="form-group">
-                            <label>File (PDF preferred)</label>
-                            <div class="file-drop" id="fileDrop">
-                                <input type="file" name="file" id="fileInput" accept=".pdf,.txt,.html,.htm,.md" required>
-                                <div class="file-drop-text">
-                                    <span style="font-size: 40px; display: block; margin-bottom: 12px;">☁️</span>
-                                    <p>Select a file to index</p>
-                                    <small>AI Vision powered parsing enabled</small>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 48px;">
+                <!-- Upload Section -->
+                <section style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px; align-items: start;">
+                    <div class="card" style="padding: 0; overflow: hidden; border-style: none; background: transparent;">
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="dropzone-modern" id="fileDrop">
+                                <input type="file" name="file" id="fileInput" accept=".pdf,.txt,.html,.htm,.md" required style="display: none;">
+                                <div class="dropzone-icon">☁️</div>
+                                <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 8px;">Drop knowledge here</h3>
+                                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">PDF, Markdown, or Text. AI Vision parsing enabled.</p>
+                                <div id="fileSelectionInfo" style="display: none; padding: 12px; background: var(--accent-glow); border-radius: var(--radius-md); font-size: 12px; font-weight: 700; color: var(--accent);">
+                                    Selected: <span id="selectedFileName">...</span>
                                 </div>
+                                <button type="button" class="btn-primary" onclick="document.getElementById('fileInput').click()" style="margin-top: 16px; padding: 10px 24px; font-size: 13px;">
+                                    Browse Files
+                                </button>
+                            </div>
+                    </div>
+
+                    <div class="card" style="padding: 32px;">
+                        <h3 class="card-title" style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Ingestion Parameters</h3>
+                        
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label class="form-label">Internal Title</label>
+                            <input type="text" name="title" class="input-modern" required placeholder="e.g. Q4 Policy Update">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                            <div class="form-group">
+                                <label class="form-label">Strategy</label>
+                                <select name="chunk_strategy" class="input-modern">
+                                    <option value="semantic">Docling Semantic</option>
+                                    <option value="recursive">Recursive</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Chunk Size</label>
+                                <input type="number" name="chunk_size" class="input-modern" value="1024">
                             </div>
                         </div>
 
-                        <details style="margin: 24px 0; background: var(--bg-app); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border);">
-                            <summary style="cursor: pointer; font-weight: 700; color: var(--accent); font-size: 14px;">Ingestion Strategy</summary>
-                            <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                <div class="form-group">
-                                    <label>Strategy</label>
-                                    <select name="chunk_strategy">
-                                        <option value="semantic">Docling Semantic (Recommended)</option>
-                                        <option value="recursive">Recursive Character</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Chunk Size</label>
-                                    <input type="number" name="chunk_size" value="1024">
-                                </div>
-                            </div>
-                        </details>
-
-                        <button type="submit" class="btn-primary" id="uploadBtn" style="width: 100%;">
+                        <button type="submit" class="btn-primary" id="uploadBtn" style="width: 100%; padding: 16px;">
                             Start Processing
                         </button>
-                    </form>
-                    <div id="uploadResult" style="display: none; margin-top: 24px;"></div>
-                </div>
-
-                <!-- Indexed Documents -->
-                <div class="card">
-                    <h3 class="card-title" style="margin-bottom: 24px;">📚 Knowledge Base</h3>
-                    <div id="documentsList">
-                        <p style="color: var(--text-muted); opacity: 0.5;">Connecting to index...</p>
+                        </form>
+                        <div id="uploadResult" style="display: none; margin-top: 24px;"></div>
                     </div>
-                </div>
+                </section>
+
+                <!-- Knowledge Base Table -->
+                <section>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h3 class="card-title" style="font-size: 18px; font-weight: 800;">📚 Knowledge Base Index</h3>
+                        <span class="status-pill info" id="kbCount">0 Documents</span>
+                    </div>
+                    
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Document Title</th>
+                                    <th>Chunks</th>
+                                    <th>Created At</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="documentsList">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 60px; color: var(--text-muted);">
+                                        Synchronizing with vector store...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
         </main>
     </div>
 
     <script>
-        // Theme Persistence
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('finquery-theme', theme);
@@ -115,13 +137,21 @@
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('finquery-theme') || 'light';
             applyTheme(savedTheme);
-            
             document.getElementById('themeToggle').addEventListener('click', () => {
                 const current = document.documentElement.getAttribute('data-theme');
                 applyTheme(current === 'dark' ? 'light' : 'dark');
             });
-
             loadDocuments();
+        });
+
+        // File Selection Feedback
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name;
+            const info = document.getElementById('fileSelectionInfo');
+            if (fileName) {
+                info.style.display = 'block';
+                document.getElementById('selectedFileName').textContent = fileName;
+            }
         });
 
         // Upload handler
@@ -130,7 +160,7 @@
             const btn = document.getElementById('uploadBtn');
             const resultDiv = document.getElementById('uploadResult');
             btn.disabled = true;
-            btn.textContent = 'Parsing & Indexing...';
+            btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span> Indexing...';
 
             const formData = new FormData(e.target);
             try {
@@ -139,7 +169,7 @@
                 resultDiv.style.display = 'block';
                 
                 if (data.errors && data.errors.length) {
-                    resultDiv.innerHTML = `<div class="alert alert-error">Failed: ${data.errors.join('. ')}</div>`;
+                    resultDiv.innerHTML = `<div class="alert alert-error">Ingestion failed: ${data.errors.join('. ')}</div>`;
                 } else {
                     resultDiv.innerHTML = `
                         <div class="alert alert-success">
@@ -147,6 +177,8 @@
                             <small>${data.chunks_created} vectors generated in ${data.processing_time_ms.toFixed(0)}ms</small>
                         </div>`;
                     loadDocuments();
+                    e.target.reset();
+                    document.getElementById('fileSelectionInfo').style.display = 'none';
                 }
             } catch (err) {
                 resultDiv.style.display = 'block';
@@ -158,25 +190,31 @@
 
         async function loadDocuments() {
             const container = document.getElementById('documentsList');
+            const countLabel = document.getElementById('kbCount');
             try {
                 const res = await fetch('/api/documents/');
                 const data = await res.json();
+                
+                countLabel.textContent = `${data.documents.length} Documents`;
+
                 if (!data.documents.length) {
-                    container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 40px;">No documents in index.</p>';
+                    container.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 60px; color: var(--text-muted);">No documents processed yet.</td></tr>';
                     return;
                 }
+
                 container.innerHTML = data.documents.map(doc => `
-                    <div class="doc-card">
-                        <div class="doc-header">
-                            <span class="doc-title">${doc.title}</span>
-                            <span class="doc-badge indexed">Live</span>
-                        </div>
-                        <div class="doc-meta">${doc.total_chunks} chunks • ${new Date(doc.created_at).toLocaleDateString()}</div>
-                        <button class="btn-danger-sm" onclick="deleteDoc('${doc.id}')">Remove from Index</button>
-                    </div>
+                    <tr>
+                        <td style="font-weight: 700;">${doc.title}</td>
+                        <td><span class="engine-tag">${doc.total_chunks} Chunks</span></td>
+                        <td>${new Date(doc.created_at).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'})}</td>
+                        <td><span class="status-pill success">Live</span></td>
+                        <td style="text-align: right;">
+                            <button class="btn-danger-sm" onclick="deleteDoc('${doc.id}')">Remove</button>
+                        </td>
+                    </tr>
                 `).join('');
             } catch (err) {
-                container.innerHTML = `<p style="color: var(--danger);">Failed to load index data.</p>`;
+                container.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger);">Failed to synchronize knowledge base.</td></tr>`;
             }
         }
 
@@ -189,9 +227,22 @@
         // Dropzone
         const fileDrop = document.getElementById('fileDrop');
         const fileInput = document.getElementById('fileInput');
-        fileDrop.addEventListener('dragover', (e) => { e.preventDefault(); fileDrop.classList.add('dragover'); });
+        
+        fileDrop.addEventListener('dragover', (e) => { 
+            e.preventDefault(); 
+            fileDrop.classList.add('dragover'); 
+        });
+        
         fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('dragover'));
-        fileDrop.addEventListener('drop', (e) => { e.preventDefault(); fileDrop.classList.remove('dragover'); fileInput.files = e.dataTransfer.files; });
+        
+        fileDrop.addEventListener('drop', (e) => { 
+            e.preventDefault(); 
+            fileDrop.classList.remove('dragover'); 
+            fileInput.files = e.dataTransfer.files;
+            
+            const event = new Event('change');
+            fileInput.dispatchEvent(event);
+        });
     </script>
 </body>
 </html>
