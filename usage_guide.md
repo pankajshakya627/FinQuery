@@ -182,4 +182,14 @@ Key settings you may want to change:
 | `TOP_K_RESULTS` | `5` | How many chunks to retrieve per query |
 | `MONGODB_URL` | `mongodb://localhost:27017/hdfc_rag` | MongoDB connection |
 
+### Azure OpenAI Configuration
+To use Azure OpenAI, update your `.env` with:
+```env
+LLM_PROVIDER=azure
+AZURE_OPENAI_API_KEY=your_key
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_AD_DEPLOYMENT_NAME=your_deployment_name
+AZURE_OPENAI_API_VERSION=2023-05-15
+```
+
 After changing `.env`, restart the server.

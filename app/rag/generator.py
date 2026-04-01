@@ -76,6 +76,8 @@ class AnswerGenerator:
 
         if provider == "ollama":
             self._llm = self._init_ollama()
+        elif provider == "azure":
+            self._llm = self._init_azure_openai()
         else:
             self._llm = self._init_openai()
 
@@ -101,6 +103,18 @@ class AnswerGenerator:
             temperature=settings.llm_temperature,
             max_tokens=settings.llm_max_tokens,
             api_key=settings.openai_api_key,
+        )
+
+    def _init_azure_openai(self):
+        """Initialize Azure OpenAI LLM."""
+        from langchain_openai import AzureChatOpenAI
+        return AzureChatOpenAI(
+            azure_deployment=settings.azure_openai_ad_deployment_name,
+            openai_api_version=settings.azure_openai_api_version,
+            azure_endpoint=settings.azure_openai_endpoint,
+            api_key=settings.azure_openai_api_key,
+            temperature=settings.llm_temperature,
+            max_tokens=settings.llm_max_tokens,
         )
 
     def _init_ollama(self):

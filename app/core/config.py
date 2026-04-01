@@ -33,11 +33,17 @@ class Settings(BaseSettings):
     embedding_dimension: int = 384
 
     openai_api_key: str = "your-openai-api-key-here"
-    llm_provider: str = "openai"  # "openai" or "ollama"
+    llm_provider: str = "openai"  # "openai", "ollama", or "azure"
     llm_model: str = "gpt-4o-mini"  # For ollama: "llama3.2", "mistral", etc.
     llm_temperature: float = 0.1
     llm_max_tokens: int = 1024
     ollama_base_url: str = "http://localhost:11434"
+
+    # Azure OpenAI settings (required if llm_provider="azure")
+    azure_openai_api_key: str = ""
+    azure_openai_endpoint: str = ""
+    azure_openai_ad_deployment_name: str = ""
+    azure_openai_api_version: str = "2023-05-15"
 
     chunk_size: int = 512
     chunk_overlap: int = 50

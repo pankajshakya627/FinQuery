@@ -45,7 +45,7 @@ Production-grade Retrieval-Augmented Generation system for HDFC Bank Credit Card
 | **Embeddings**     | Sentence Transformers (MiniLM)     |
 | **Vector Store**   | ChromaDB (persistent, local)       |
 | **Metadata DB**    | **MongoDB 7.0** (or PostgreSQL 16) |
-| **LLM**           | **Ollama** (Local) or OpenAI       |
+| **LLM**           | **Ollama** (Local), OpenAI, or **Azure OpenAI** |
 | **Frontend**       | Jinja2 + Vanilla JS (Dark Theme)   |
 
 ## Project Structure
@@ -132,6 +132,8 @@ curl -X POST http://localhost:8000/api/query \
 |-----------------------|-----------------------|-----------------------------------|
 | `DATABASE_TYPE`       | `mongodb`             | `mongodb` or `postgres`           |
 | `MONGODB_URL`         | `mongodb://localhost:27017`| MongoDB connection URL        |
-| `LLM_PROVIDER`        | `ollama`              | `ollama` or `openai`              |
+| `LLM_PROVIDER`        | `ollama`              | `ollama`, `openai`, or `azure`       |
+| `AZURE_OPENAI_API_KEY`| —                     | Azure API key                     |
+| `AZURE_OPENAI_ENDPOINT`| —                    | Azure Endpoint URL                |
 | `LLM_MODEL`           | `qwen2.5:7b`          | Model name for Ollama/OpenAI      |
 | `CHROMA_PERSIST_DIR`  | `./data/chroma_db`    | Vector store directory            |
