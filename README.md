@@ -1,4 +1,4 @@
-# HDFC Credit Card — RAG Q&A System (V2)
+# FinQuery — HDFC Credit Card RAG Q&A System
 
 Production-grade Retrieval-Augmented Generation system for HDFC Bank Credit Card MITC (Most Important Terms & Conditions) document Q&A. Now with **MongoDB** metadata storage, **Ollama** local LLM support, and **Universal Document Parsing**.
 
