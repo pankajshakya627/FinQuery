@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/styles.css?v=2">
+    <link rel="stylesheet" href="/static/css/styles.css?v=3">
 </head>
 <body>
     <div class="app-shell">
@@ -38,74 +38,110 @@
         </aside>
 
         <main class="main-content" style="padding: 40px; overflow-y: auto;">
-            <header style="margin-bottom: 48px;">
-                <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px;">System Analytics</h1>
-                <p style="color: var(--text-muted); font-size: 16px;">Real-time technical metrics for the FinQuery RAG ecosystem.</p>
+            <header style="margin-bottom: 48px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px;">System Analytics</h1>
+                    <p style="color: var(--text-muted); font-size: 16px;">Technical telemetry and performance monitoring for FinQuery Core.</p>
+                </div>
+                <div class="status-pill info">
+                    <span class="heartbeat" style="background: var(--accent);"></span>
+                    Live Telemetry
+                </div>
             </header>
 
-            <!-- Stats Grid -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 40px;">
-                <div class="stat-card">
-                    <div class="stat-label">Total Documents</div>
-                    <div class="stat-value" id="statDocs">—</div>
+            <!-- KPI Row -->
+            <div class="dashboard-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Knowledge Base</div>
+                    <div class="kpi-value" id="statDocs">0</div>
+                    <div class="kpi-trend up"><span>↑</span> Documents Indexed</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label">Vector Chunks</div>
-                    <div class="stat-value" id="statChunks">—</div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Chunks</div>
+                    <div class="kpi-value" id="statChunks">0</div>
+                    <div class="kpi-trend up"><span>↑</span> Vector Segments</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label">Total Queries</div>
-                    <div class="stat-value" id="statQueries">—</div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Query Volume</div>
+                    <div class="kpi-value" id="statQueries">0</div>
+                    <div class="kpi-trend neutral"><span>•</span> Life-to-date</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label">Avg P99 Latency</div>
-                    <div class="stat-value" id="statAvgTime">—</div>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 32px; margin-bottom: 32px;">
-                <!-- Vector Store -->
-                <div class="card">
-                    <h3 class="card-title" style="margin-bottom: 20px;">🧮 Vector Engine (ChromaDB)</h3>
-                    <div id="vectorStats" style="color: var(--text-muted);">
-                        <div class="info-row"><span>Status:</span><strong>Polling...</strong></div>
-                    </div>
-                </div>
-
-                <!-- Health -->
-                <div class="card">
-                    <h3 class="card-title" style="margin-bottom: 20px;">🏥 Connectivity Health</h3>
-                    <div id="healthStats" style="color: var(--text-muted);">
-                        <div class="info-row"><span>Status:</span><strong>Polling...</strong></div>
-                    </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">P99 Latency</div>
+                    <div class="kpi-value" id="statAvgTime">0ms</div>
+                    <div class="kpi-trend neutral"><span>⏱</span> RAG Pipeline</div>
                 </div>
             </div>
 
-            <!-- Recent Activity -->
-            <div class="card" style="margin-bottom: 32px;">
-                <h3 class="card-title" style="margin-bottom: 24px;">📝 Recent AI Reasoning Logs</h3>
-                <div id="recentQueries" style="overflow-x: auto;">
-                    <p style="color: var(--text-muted); text-align: center; padding: 20px;">Fetching logs...</p>
+            <!-- System Health Row -->
+            <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="card" style="padding: 24px;">
+                    <h3 class="card-title" style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                        <span>🧮 VECTOR ENGINE</span>
+                        <span class="status-pill success" id="vsBadge">Active</span>
+                    </h3>
+                    <div id="vectorStats">
+                        <div class="info-row"><span>Namespace</span><strong>...</strong></div>
+                        <div class="info-row"><span>Embeddings</span><strong>...</strong></div>
+                        <div class="info-row"><span>Model</span><strong>...</strong></div>
+                    </div>
+                </div>
+
+                <div class="card" style="padding: 24px;">
+                    <h3 class="card-title" style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                        <span>🏥 CONNECTIVITY</span>
+                        <span class="status-pill info" id="healthBadge">Checking</span>
+                    </h3>
+                    <div id="healthStats">
+                        <div class="info-row"><span>Status</span><strong>...</strong></div>
+                        <div class="info-row"><span>Inference</span><strong>...</strong></div>
+                        <div class="info-row"><span>Storage</span><strong>...</strong></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Architecture Logic -->
-            <div class="card">
-                <h3 class="card-title" style="margin-bottom: 24px;">🏗️ RAG Pipeline Architecture</h3>
-                <div style="font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--text-muted); line-height: 2.2;">
-                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <span class="arch-node src">DOCS SOURCE</span> ❯ 
-                        <span class="arch-node parse">AI VISION PARSER</span> ❯ 
-                        <span class="arch-node chunk">SEMANTIC CHUNKER</span> ❯ 
-                        <span class="arch-node embed">VECTOR ENCODING</span> ❯ 
-                        <span class="arch-node store">PERSISTENT CACHE</span>
+            <!-- Activity Table -->
+            <section style="margin-top: 32px;">
+                <h3 class="card-title" style="margin-bottom: 20px; font-size: 18px; font-weight: 800;">📝 Recent AI Reasoning Logs</h3>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Intent / Query</th>
+                                <th>Chunks</th>
+                                <th>Latency</th>
+                                <th>Engine</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentQueries">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                    Connecting to reasoning stream...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Pipeline Architecture -->
+            <div class="card" style="margin-top: 48px; border-style: dashed; background: transparent;">
+                <h3 class="card-title" style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted);">🏗️ RAG PIPELINE TOPOLOGY</h3>
+                <div style="font-family: var(--font-mono); font-size: 10px; font-weight: 600; color: var(--text-muted); line-height: 2.2;">
+                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px; opacity: 0.7;">
+                        <span class="arch-node src">INGEST</span> ❯ 
+                        <span class="arch-node parse">DOCLING</span> ❯ 
+                        <span class="arch-node chunk">SEMANTIC</span> ❯ 
+                        <span class="arch-node embed">MiniLM-L6</span> ❯ 
+                        <span class="arch-node store">CHROMADB</span>
                     </div>
-                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 16px;">
-                        <span class="arch-node query">USER INTENT</span> ❯ 
-                        <span class="arch-node embed">VECTOR SEARCH</span> ❯ 
-                        <span class="arch-node store">LATENT RETRIEVAL</span> ❯ 
-                        <span class="arch-node gen">LLM SYNTHESIS</span> ❯ 
-                        <span class="arch-node resp">GROUNDED RESPONSE</span>
+                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 16px;">
+                        <span class="arch-node query">INPUT</span> ❯ 
+                        <span class="arch-node embed">ENCODE</span> ❯ 
+                        <span class="arch-node store">RETRIEVE</span> ❯ 
+                        <span class="arch-node gen">SYNTHESIS</span> ❯ 
+                        <span class="arch-node resp" style="color: var(--accent);">Grounded Result</span>
                     </div>
                 </div>
             </div>
@@ -130,7 +166,7 @@
                 applyTheme(current === 'dark' ? 'light' : 'dark');
             });
             loadDashboard();
-            setInterval(loadDashboard, 15000); // Faster polling for dashboard
+            setInterval(loadDashboard, 15000);
         });
 
         async function loadDashboard() {
@@ -147,42 +183,52 @@
             try {
                 const vs = await (await fetch('/api/stats/vector-store')).json();
                 document.getElementById('vectorStats').innerHTML = `
-                    <div class="info-row"><span>Namespace:</span><strong>${vs.collection_name}</strong></div>
-                    <div class="info-row"><span>Total Vectors:</span><strong>${vs.total_embeddings}</strong></div>
-                    <div class="info-row"><span>Embedding Model:</span><strong>${vs.embedding_model}</strong></div>
+                    <div class="info-row"><span>Namespace</span><strong>${vs.collection_name}</strong></div>
+                    <div class="info-row"><span>Total Vectors</span><strong>${vs.total_embeddings}</strong></div>
+                    <div class="info-row"><span>Model</span><strong>${vs.embedding_model}</strong></div>
                 `;
-            } catch(e) {}
+                document.getElementById('vsBadge').className = 'status-pill success';
+                document.getElementById('vsBadge').textContent = 'Online';
+            } catch(e) {
+                document.getElementById('vsBadge').className = 'status-pill warning';
+                document.getElementById('vsBadge').textContent = 'Error';
+            }
 
             // Health
             try {
                 const h = await (await fetch('/health')).json();
                 document.getElementById('healthStats').innerHTML = `
-                    <div class="info-row"><span>Pulse:</span><strong style="color: #10b981">${h.status}</strong></div>
-                    <div class="info-row"><span>Storage Engine:</span><strong>${h.mongodb_connected ? 'Active (Mongo)' : 'Disabled'}</strong></div>
-                    <div class="info-row"><span>Vector DB:</span><strong>Connected (Chroma)</strong></div>
-                    <div class="info-row"><span>Inference:</span><strong>${h.llm_model}</strong></div>
+                    <div class="info-row"><span>Pulse</span><strong style="color: #10b981">${h.status}</strong></div>
+                    <div class="info-row"><span>Inference</span><strong>${h.llm_model}</strong></div>
+                    <div class="info-row"><span>Storage</span><strong>${h.mongodb_connected ? 'Mongo Active' : 'Disconnected'}</strong></div>
                 `;
-            } catch(e) {}
+                const badge = document.getElementById('healthBadge');
+                badge.className = h.status === 'healthy' ? 'status-pill success' : 'status-pill warning';
+                badge.textContent = h.status.toUpperCase();
+            } catch(e) {
+                document.getElementById('healthBadge').className = 'status-pill warning';
+                document.getElementById('healthBadge').textContent = 'OFFLINE';
+            }
 
             // Recent queries
             try {
-                const queries = await (await fetch('/api/stats/recent-queries?limit=8')).json();
+                const queries = await (await fetch('/api/stats/recent-queries?limit=10')).json();
+                const container = document.getElementById('recentQueries');
+                
                 if (!queries.length) {
-                    document.getElementById('recentQueries').innerHTML = '<p style="color: var(--text-muted); opacity: 0.5;">No query history found.</p>';
+                    container.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">No history logged.</td></tr>';
                     return;
                 }
-                document.getElementById('recentQueries').innerHTML = `
-                    <table class="data-table">
-                        <thead><tr><th>Intent</th><th>Chunks</th><th>Latency</th><th>Engine</th></tr></thead>
-                        <tbody>${queries.map(q => `
-                            <tr>
-                                <td style="max-width: 400px; font-weight: 500;">${q.question}</td>
-                                <td>${q.chunks_retrieved} Chunks</td>
-                                <td>${(q.time_ms || 0).toFixed(0)}ms</td>
-                                <td style="text-transform: capitalize;">${q.model || 'Default'}</td>
-                            </tr>
-                        `).join('')}</tbody>
-                    </table>`;
+
+                container.innerHTML = queries.map(q => `
+                    <tr>
+                        <td><div class="reasoning-text" title="${q.question}">${q.question}</div></td>
+                        <td><span class="status-pill info">${q.chunks_retrieved} Vectors</span></td>
+                        <td><strong>${(q.time_ms || 0).toFixed(0)}ms</strong></td>
+                        <td><span class="engine-tag">${q.model || 'Default'}</span></td>
+                        <td><span class="status-pill success">Success</span></td>
+                    </tr>
+                `).join('');
             } catch(e) {}
         }
     </script>

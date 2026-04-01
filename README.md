@@ -1,6 +1,6 @@
-# FinQuery — HDFC Credit Card RAG Q&A System
+# FinQuery — Credit Card RAG Q&A System
 
-Production-grade Retrieval-Augmented Generation system for HDFC Bank Credit Card MITC (Most Important Terms & Conditions) document Q&A. Now with **MongoDB** metadata storage, **Ollama** local LLM support, and **Universal Document Parsing**.
+Production-grade Retrieval-Augmented Generation system for Credit Card MITC (Most Important Terms & Conditions) document Q&A. Now with **MongoDB** metadata storage, **Ollama** local LLM support, and **Universal Document Parsing**.
 
 ## Architecture
 
@@ -51,7 +51,7 @@ Production-grade Retrieval-Augmented Generation system for HDFC Bank Credit Card
 ## Project Structure
 
 ```
-hdfc-rag/
+finquery-rag/
 ├── app/
 │   ├── api/
 │   │   └── routes.py          # FastAPI endpoints (ingest, query, health)
@@ -98,7 +98,7 @@ For a deeper dive into the system's design, evolution, and folder structure, ple
 
 ```bash
 # Clone and setup
-cd hdfc-rag
+cd finquery-rag
 python -m venv venv
 source .venv/bin/activate
 pip install -r requirements.txt
