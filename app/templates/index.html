@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} — Credit Card Q&A</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <!-- ═══ SIDEBAR ═══ -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">HDFC</div>
+                    <div class="logo-text">
+                        <span class="logo-title">RAG Assistant</span>
+                        <span class="logo-subtitle">Credit Card MITC</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/" class="nav-item active" data-page="chat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <span>Chat</span>
+                </a>
+                <a href="/upload" class="nav-item" data-page="upload">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span>Upload Docs</span>
+                </a>
+                <a href="/dashboard" class="nav-item" data-page="dashboard">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                    <span>Dashboard</span>
+                </a>
+            </nav>
+
+            <!-- Pipeline Status -->
+            <div class="pipeline-box" id="pipelineBox">
+                <div class="pipeline-title">RAG Pipeline</div>
+                <div class="pipeline-steps">
+                    <div class="step" id="step-embed">
+                        <div class="step-dot"></div>
+                        <span>Query Embedding</span>
+                    </div>
+                    <div class="step" id="step-retrieve">
+                        <div class="step-dot"></div>
+                        <span>Top-K Retrieval</span>
+                    </div>
+                    <div class="step" id="step-rerank">
+                        <div class="step-dot"></div>
+                        <span>Reranking</span>
+                    </div>
+                    <div class="step" id="step-generate">
+                        <div class="step-dot"></div>
+                        <span>LLM Generation</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="sidebar-footer">
+                <div class="sys-stat">
+                    <span class="stat-dot" id="healthDot"></span>
+                    <span id="healthText">Checking...</span>
+                </div>
+                <div class="sys-info" id="sysInfo">—</div>
+            </div>
+        </aside>
+
+        <!-- ═══ MAIN CONTENT ═══ -->
+        <main class="main-content">
+            <!-- Chat Messages -->
+            <div class="chat-area" id="chatArea">
+                <!-- Welcome Screen -->
+                <div class="welcome" id="welcomeScreen">
+                    <div class="welcome-icon">🏦</div>
+                    <h1>HDFC Credit Card — RAG Q&A</h1>
+                    <p>Ask anything about credit card fees, rewards, charges, limits, and policies. Answers are grounded in the official MITC document.</p>
+
+                    <div class="suggested-grid">
+                        <button class="suggested-btn" onclick="askQuestion('What is the annual fee for Infinia card and how to get it waived?')">
+                            <span class="sq-icon">💳</span>
+                            Infinia annual fee & waiver
+                        </button>
+                        <button class="suggested-btn" onclick="askQuestion('What are the late payment charges for HDFC credit cards?')">
+                            <span class="sq-icon">⚠️</span>
+                            Late payment charges
+                        </button>
+                        <button class="suggested-btn" onclick="askQuestion('How does the fuel surcharge waiver work?')">
+                            <span class="sq-icon">⛽</span>
+                            Fuel surcharge waiver
+                        </button>
+                        <button class="suggested-btn" onclick="askQuestion('What is the interest rate on revolving credit?')">
+                            <span class="sq-icon">📊</span>
+                            Revolving credit interest
+                        </button>
+                        <button class="suggested-btn" onclick="askQuestion('How are reward points calculated and what is their validity?')">
+                            <span class="sq-icon">🎁</span>
+                            Reward points validity
+                        </button>
+                        <button class="suggested-btn" onclick="askQuestion('What should I do if my HDFC credit card is lost or stolen?')">
+                            <span class="sq-icon">🔒</span>
+                            Lost/stolen card process
+                        </button>
+                        <button class="suggested-btn" onclick="askQuestion('What are the foreign currency transaction charges?')">
+                            <span class="sq-icon">🌍</span>
+                            Foreign transaction fees
+                        </button>
+                        <button class="suggested-btn" onclick="askQuestion('What lounge access benefits does Regalia card offer?')">
+                            <span class="sq-icon">✈️</span>
+                            Lounge access benefits
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="messages" id="messagesContainer"></div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea
+                        id="queryInput"
+                        placeholder="Ask about HDFC credit card fees, rewards, limits, charges..."
+                        rows="1"
+                        maxlength="2048"
+                    ></textarea>
+                    <button id="sendBtn" onclick="sendQuery()" title="Send">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+                </div>
+                <div class="input-meta">
+                    <span>FastAPI + LangChain + ChromaDB + PostgreSQL</span>
+                    <span id="charCount">0 / 2048</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

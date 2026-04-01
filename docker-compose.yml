@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL ──
+  postgres:
+    image: postgres:16-alpine
+    container_name: hdfc_rag_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hdfc_rag
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── MongoDB ──
+  mongodb:
+    image: mongo:7.0
+    container_name: hdfc_rag_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── FastAPI RAG App ──
+  app:
+    build: .
+    container_name: hdfc_rag_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_HOST=postgres
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres123@postgres:5432/hdfc_rag
+      - DATABASE_URL_SYNC=postgresql://postgres:postgres123@postgres:5432/hdfc_rag
+      - MONGODB_URL=mongodb://mongodb:27017/hdfc_rag
+      - DATABASE_TYPE=mongodb
+      - CHROMA_PERSIST_DIR=/app/data/chroma_db
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-your-key-here}
+    volumes:
+      - chromadata:/app/data/chroma_db
+      - uploads:/app/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  mongodata:
+  chromadata:
+  uploads:

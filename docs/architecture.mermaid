@@ -1,0 +1,37 @@
+flowchart LR
+    subgraph Sources["Sources & Ingestion"]
+        A[Internal Documents\nGCS bucket or local directory] --> B[Ingestion Trigger\nbatch / schedule /\noptional GCS event]
+    end
+
+    subgraph Indexing["Indexing Pipeline"]
+        B --> C[Parsing & Cleaning\nPyPDF / Doc / HTML loaders\nOptional Document AI / OCR\nMetadata extraction]
+        C --> D[Chunking Layer\nLangChain RecursiveTextSplitter\nsemantic chunking\nagent / LLM chunking\nOutput: chunks + metadata]
+        D --> E[Embedding Layer\nSentence Transformers\nall-MiniLM-L6-v2\nopen-source / self-hosted]
+        E --> F[Vector Store\nLocal: ChromaDB / FAISS\nCloud: Pinecone\n+ chunk metadata + doc IDs]
+    end
+
+    subgraph Query["Online Query Path"]
+        U[User / Client App\nWeb UI / API client] --> G[FastAPI Backend\nEndpoints: /ingest /query /health\nAuth / business rules / citations]
+        G --> H[Query Processing\nquery embedding\nTop-K semantic retrieval\noptional rerank / filters\nprompt construction]
+        H --> F
+        H --> I[LLM Answer Generation\nOpenAI GPT-4o-mini\nor open-source model\nReturn grounded answer + sources]
+        I --> J[Grounded Answer + Sources]
+        J --> U
+    end
+
+    subgraph CICD["CI/CD & Runtime"]
+        GH[GitHub Repository\nFastAPI app + Dockerfile\nIaC / deployment config]
+        GA[GitHub Actions\nOIDC auth to GCP\nBuild Docker image\nRun tests / security checks]
+        AR[Artifact Registry\nStore versioned container images]
+        CR[Cloud Run Service\nDeploy FastAPI container\nAutoscaling HTTPS endpoint]
+        SM[Secret Manager\nOpenAI key / Pinecone key / app secrets]
+        GH --> GA --> AR --> CR
+        SM --> CR
+    end
+
+    subgraph Database["PostgreSQL"]
+        PG[(PostgreSQL\ndocuments table\nchunks table\nquery_logs table\nconversations table)]
+    end
+
+    G --> PG
+    D --> PG

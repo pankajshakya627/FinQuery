@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — {{ app_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">HDFC</div>
+                    <div class="logo-text">
+                        <span class="logo-title">RAG Assistant</span>
+                        <span class="logo-subtitle">Credit Card MITC</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/" class="nav-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Chat</span></a>
+                <a href="/upload" class="nav-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>Upload Docs</span></a>
+                <a href="/dashboard" class="nav-item active"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Dashboard</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-content" style="padding: 40px;">
+            <h1 style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin-bottom: 32px;">System Dashboard</h1>
+
+            <!-- Stats Cards -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 36px;">
+                <div class="stat-card">
+                    <div class="stat-label">Documents</div>
+                    <div class="stat-value" id="statDocs">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Chunks</div>
+                    <div class="stat-value" id="statChunks">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Queries</div>
+                    <div class="stat-value" id="statQueries">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Avg Response</div>
+                    <div class="stat-value" id="statAvgTime">—</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                <!-- Vector Store -->
+                <div class="card">
+                    <h3 class="card-title">🧮 Vector Store (ChromaDB)</h3>
+                    <div id="vectorStats" style="margin-top: 12px; color: var(--text-muted);">Loading...</div>
+                </div>
+
+                <!-- Health -->
+                <div class="card">
+                    <h3 class="card-title">🏥 System Health</h3>
+                    <div id="healthStats" style="margin-top: 12px; color: var(--text-muted);">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Recent Queries -->
+            <div class="card" style="margin-top: 32px;">
+                <h3 class="card-title">📝 Recent Queries</h3>
+                <div id="recentQueries" style="margin-top: 16px;">Loading...</div>
+            </div>
+
+            <!-- Architecture -->
+            <div class="card" style="margin-top: 32px;">
+                <h3 class="card-title">🏗️ Architecture Overview</h3>
+                <div style="margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-secondary); line-height: 2.2;">
+                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <span class="arch-node src">📄 GCS/Upload</span> →
+                        <span class="arch-node parse">🔍 PyPDF Parser</span> →
+                        <span class="arch-node chunk">✂️ LangChain Chunker</span> →
+                        <span class="arch-node embed">🧮 SentenceTransformers</span> →
+                        <span class="arch-node store">💾 ChromaDB + MongoDB</span>
+                    </div>
+                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
+                        <span class="arch-node query">❓ User Query</span> →
+                        <span class="arch-node embed">🧮 Query Embedding</span> →
+                        <span class="arch-node store">🔎 Top-K Retrieval</span> →
+                        <span class="arch-node gen">🤖 LLM Generation</span> →
+                        <span class="arch-node resp">✅ Grounded Answer</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function loadDashboard() {
+            // Stats
+            try {
+                const stats = await (await fetch('/api/stats/')).json();
+                document.getElementById('statDocs').textContent = stats.total_documents;
+                document.getElementById('statChunks').textContent = stats.total_chunks;
+                document.getElementById('statQueries').textContent = stats.total_queries;
+                document.getElementById('statAvgTime').textContent = `${stats.avg_response_time_ms.toFixed(0)}ms`;
+            } catch(e) { console.error(e); }
+
+            // Vector store
+            try {
+                const vs = await (await fetch('/api/stats/vector-store')).json();
+                document.getElementById('vectorStats').innerHTML = `
+                    <div class="info-row"><span>Collection:</span><strong>${vs.collection_name}</strong></div>
+                    <div class="info-row"><span>Embeddings:</span><strong>${vs.total_embeddings}</strong></div>
+                    <div class="info-row"><span>Model:</span><strong>${vs.embedding_model}</strong></div>
+                    <div class="info-row"><span>Dimensions:</span><strong>${vs.embedding_dimension}</strong></div>
+                `;
+            } catch(e) { document.getElementById('vectorStats').textContent = 'Error loading'; }
+
+            // Health
+            try {
+                const h = await (await fetch('/health')).json();
+                document.getElementById('healthStats').innerHTML = `
+                    <div class="info-row"><span>Status:</span><strong style="color: ${h.status==='healthy'?'#10b981':'#f59e0b'}">${h.status}</strong></div>
+                    <div class="info-row"><span>MongoDB:</span><strong>${h.mongodb_connected ? '✅ Connected' : '❌ Down'}</strong></div>
+                    <div class="info-row"><span>Database Type:</span><strong>${h.database_type || 'mongodb'}</strong></div>
+                    <div class="info-row"><span>ChromaDB:</span><strong>${h.chroma_connected ? '✅ Connected' : '❌ Down'}</strong></div>
+                    <div class="info-row"><span>LLM Model:</span><strong>${h.llm_model}</strong></div>
+                `;
+            } catch(e) { document.getElementById('healthStats').textContent = 'Error loading'; }
+
+            // Recent queries
+            try {
+                const queries = await (await fetch('/api/stats/recent-queries?limit=10')).json();
+                if (!queries.length) {
+                    document.getElementById('recentQueries').innerHTML = '<p style="color: var(--text-muted);">No queries yet.</p>';
+                    return;
+                }
+                document.getElementById('recentQueries').innerHTML = `
+                    <table class="data-table">
+                        <thead><tr><th>Question</th><th>Chunks</th><th>Avg Score</th><th>Time</th><th>Model</th></tr></thead>
+                        <tbody>${queries.map(q => `
+                            <tr>
+                                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${q.question}</td>
+                                <td>${q.chunks_retrieved}</td>
+                                <td>${(q.avg_score || 0).toFixed(3)}</td>
+                                <td>${(q.time_ms || 0).toFixed(0)}ms</td>
+                                <td>${q.model || '—'}</td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>`;
+            } catch(e) { document.getElementById('recentQueries').textContent = 'Error loading'; }
+        }
+
+        loadDashboard();
+        setInterval(loadDashboard, 30000);
+    </script>
+</body>
+</html>
