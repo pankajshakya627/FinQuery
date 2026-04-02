@@ -13,7 +13,8 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.core.config import get_settings
-from app.db.session import init_database, AsyncSessionLocal
+from app.db.session import init_database, _get_async_session_local
+from app.db.mongodb import MongoDB
 from app.models.schemas import IndexingConfig, ChunkStrategy
 from app.rag.pipeline import rag_pipeline
 
@@ -219,9 +220,11 @@ async def seed_mitc():
     print("  HDFC MITC — RAG Seed Script")
     print("=" * 60)
 
-    # 1. Initialize database
+    # 1. Initialize databases (Postgres & MongoDB)
     print("\n[1/4] Initializing database...")
     await init_database()
+    if settings.database_type == "mongodb":
+        await MongoDB.connect()
 
     # 2. Initialize RAG pipeline
     print("[2/4] Initializing RAG pipeline (embedding model + ChromaDB)...")
@@ -235,6 +238,7 @@ async def seed_mitc():
         chunk_overlap=50,
     )
 
+    AsyncSessionLocal = _get_async_session_local()
     async with AsyncSessionLocal() as db:
         result = await rag_pipeline.index_raw_text(
             text=FINQUERY_MITC_CONTENT,

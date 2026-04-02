@@ -226,7 +226,9 @@ class RAGPipeline:
 
             # Update status to FAILED
             if settings.database_type == "mongodb":
-                await mongo_db.documents.update_one(
+                mongo_db = mongo_db or MongoDB.get_db()
+                if mongo_db is not None:
+                    await mongo_db.documents.update_one(
                     {"_id": document_meta.id},
                     {
                         "$set": {

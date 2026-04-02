@@ -97,6 +97,10 @@ def get_sync_session():
 
 async def init_database():
     """Create all tables if they don't exist (PostgreSQL only)."""
+    if settings.database_type != "postgres":
+        logger.info("postgres_skipped", reason="using_mongodb")
+        return
+
     from app.db.models import Base
     from sqlalchemy.ext.asyncio import AsyncSession
     engine = _get_async_engine()
