@@ -176,9 +176,103 @@ Score(document) = (0.5 × 1/(60 + semantic_rank)) + (0.5 × 1/(60 + bm25_rank))
 - Documents ranked by combined score
 - Best of both worlds: Semantic + Exact keyword matching
 
+## 📦 Complete Component Inventory
+
+| Component | Technology | Version | Purpose |
+|-----------|------------|---------|---------|
+| **PDF Extractor** | PDFPlumber | 0.11.9 | High-fidelity text + table extraction |
+| **Chunking** | RecursiveCharacterTextSplitter | 0.3.4 | Table-aware semantic splitting |
+| **Embeddings** | all-MiniLM-L6-v2 | 3.3.1 | 384d semantic embeddings |
+| **Vector Store** | ChromaDB | 0.5.23 | Local persistent storage |
+| **Keyword Search** | rank-bm25 | 0.2.2 | Okapi BM25 search |
+| **Retrieval Fusion** | Reciprocal Rank Fusion | -- | Hybrid search |
+| **LLM Integration** | langchain-ollama | 0.2.1 | Ollama / Azure / OpenAI |
+| **Web UI** | Streamlit | 1.36.0 | Document upload & query |
+
 ---
 
-## ✅ Why This Works For Tables
+## ⚙️ Key Configuration Parameters
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| `CHUNK_SIZE` | 1500 chars | Maximum chunk size |
+| `CHUNK_OVERLAP` | 200 chars | Context overlap between chunks |
+| `TOP_K_RESULTS` | 8 | Documents returned per query |
+| `RRF_K` | 60 | Rank fusion tuning parameter |
+| `VECTOR_WEIGHT` | 0.5 | Semantic search weight |
+| `BM25_WEIGHT` | 0.5 | Keyword search weight |
+
+---
+
+## 🔬 Core Concepts Implemented
+
+### 1. BM25Retriever (from hybrid_retriever.py)
+**Implementation**: Plain Python class, not Pydantic model, for full flexibility
+```python
+class BM25Retriever:
+    def __init__(self, documents: List[Document], k: int = 4):
+        # Tokenizes all documents
+        # Initializes BM25Plus index
+        # No external dependencies beyond rank-bm25
+```
+**Key features**:
+- Handles empty document cases gracefully
+- Lowercase tokenization for better matching
+- Returns only documents with positive BM25 scores
+- Fast in-memory keyword search
+
+---
+
+### 2. HybridRetriever with RRF Fusion (from hybrid_retriever.py)
+**RRF Formula Implemented**:
+```python
+Score(document) = (vector_weight × 1/(rrf_k + semantic_rank)) + 
+                 (bm25_weight × 1/(rrf_k + bm25_rank))
+```
+
+**Code behavior**:
+- Retrieves from both semantic and BM25 in parallel
+- Uses first 200 characters of page content as stable document ID
+- Handles duplicate documents across both retrievers
+- Falls back to BM25 only if fusion returns no results
+- Equal 50/50 weighting balanced for financial documents
+
+---
+
+### 3. Table-Aware Chunking (from rag.py)
+**Splitter priority order**:
+```python
+separators=[
+    r"\n\n---\n\n",     # 1. NEVER SPLIT TABLES
+    r"\n\n## ",         # 2. H2 headers
+    r"\n\n# ",          # 3. H1 headers  
+    r"\n\n\n",          # 4. Major section breaks
+    r"\n\n",            # 5. Paragraphs
+    r"\n",              # 6. Lines
+    r"(?<=\.)\s+",      # 7. Sentences
+    r" ",               # 8. Words
+]
+```
+
+**Critical guarantee**:
+> *Markdown tables separated by `---` will **never** be split across chunks. Entire tables stay together for complete context.*
+
+---
+
+### 4. PDF Table Extraction (from rag.py)
+**PDFPlumber workflow**:
+```python
+1. Open PDF with pdfplumber
+2. Extract text with layout preservation
+3. Detect tables using pdfplumber table detection
+4. Convert each table to valid Markdown format
+5. Append tables to page content with "## Tables on Page X"
+6. Pass combined text + tables to chunker
+```
+
+**Result**: Tables become searchable Markdown that LLM can parse correctly
+
+---
 - **Tables are preserved as complete Markdown blocks** (never split across chunks)
 - **BM25 finds exact card names** like "Times Platinum"
 - **Semantic search understands context** like "fees", "charges", "benefits"
