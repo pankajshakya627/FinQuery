@@ -1,5 +1,5 @@
 """
-Seed Script: Pre-loads the HDFC Bank MITC content into the RAG system.
+Seed Script: Pre-loads the FinQuery MITC content into the RAG system.
 Parses the MITC text, chunks it, embeds it, and stores in ChromaDB + PostgreSQL.
 
 Usage:
@@ -21,14 +21,14 @@ settings = get_settings()
 
 
 # ═══════════════════════════════════════════════════════════════
-#  HDFC MITC RAW CONTENT (extracted from official PDF)
+#  FINQUERY MITC RAW CONTENT
 # ═══════════════════════════════════════════════════════════════
 
-HDFC_MITC_CONTENT = """
+FINQUERY_MITC_CONTENT = """
 MOST IMPORTANT TERMS & CONDITIONS - Version 1.76
-HDFC Bank Credit Card
+FinQuery Partner Bank Credit Card
 
-The Most Important Terms and Conditions are to be read along with the Card Member Agreement of HDFC Bank Ltd for complete understanding. The MITC are subject to change. Refer www.hdfcbank.com for details.
+The Most Important Terms and Conditions are to be read along with the Card Member Agreement of FinQuery Partner Bank Ltd for complete understanding. The MITC are subject to change. Refer www.finquery.com for details.
 
 SCHEDULE OF CHARGES
 
@@ -237,8 +237,8 @@ async def seed_mitc():
 
     async with AsyncSessionLocal() as db:
         result = await rag_pipeline.index_raw_text(
-            text=HDFC_MITC_CONTENT,
-            title="HDFC Bank Credit Card MITC v1.76",
+            text=FINQUERY_MITC_CONTENT,
+            title="FinQuery Partner Bank Credit Card MITC v1.76",
             db=db,
             config=config,
         )
@@ -254,7 +254,7 @@ async def seed_mitc():
     if result.errors:
         print(f"  ⚠️  Errors: {result.errors}")
     else:
-        print(f"\n  ✅ HDFC MITC successfully indexed! Start the server:")
+        print(f"\n  ✅ FinQuery MITC successfully indexed! Start the server:")
         print(f"     uvicorn app.main:app --reload --host 0.0.0.0 --port 8000")
         print(f"     Then open http://localhost:8000")
 

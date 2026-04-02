@@ -157,10 +157,21 @@ class AnswerGenerator:
                 )
                 enhanced_question = f"Previous conversation:\n{history_text}\n\nCurrent question: {question}"
 
+            # Truncate context to prevent exceeding token limits (especially for local LLMs)
+            max_context_chars = getattr(settings, "llm_max_context_chars", 12000) # ~3000 tokens
+            current_len = 0
+            truncated_docs = []
+            for doc in context_docs:
+                doc_len = len(doc.page_content)
+                if current_len + doc_len > max_context_chars and truncated_docs:
+                    break
+                truncated_docs.append(doc)
+                current_len += doc_len
+
             # Invoke chain
             answer = await self._chain.ainvoke({
                 "input": enhanced_question,
-                "context": context_docs,
+                "context": truncated_docs,
             })
 
             logger.info("answer_generated",

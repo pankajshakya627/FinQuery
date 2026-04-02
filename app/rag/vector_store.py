@@ -49,10 +49,20 @@ class VectorStoreManager:
         # Ensure persist directory exists
         os.makedirs(settings.chroma_persist_dir, exist_ok=True)
 
+        # Detect hardware acceleration (Metal Performance Shaders for Mac, CUDA for Nvidia)
+        import torch
+        device = "cpu"
+        if torch.backends.mps.is_available():
+            device = "mps"
+        elif torch.cuda.is_available():
+            device = "cuda"
+            
+        logger.info("hardware_acceleration", device=device)
+
         # Initialize embedding function (Sentence Transformers)
         self._embedding_fn = HuggingFaceEmbeddings(
             model_name=settings.embedding_model,
-            model_kwargs={"device": "cpu"},
+            model_kwargs={"device": device},
             encode_kwargs={
                 "normalize_embeddings": True,
                 "batch_size": 32,
@@ -139,6 +149,15 @@ class VectorStoreManager:
 
         return ids
 
+    async def index_chunks_async(
+        self,
+        chunks: list[LCDocument],
+        document_id: str,
+    ) -> list[str]:
+        """Asynchronous wrapper to prevent blocking the FastAPI event loop."""
+        import asyncio
+        return await asyncio.to_thread(self.index_chunks, chunks, document_id)
+
     # ── Retrieval ──
 
     def similarity_search(
@@ -183,6 +202,19 @@ class VectorStoreManager:
                      top_k=top_k)
 
         return results
+
+    async def similarity_search_async(
+        self,
+        query: str,
+        top_k: int = None,
+        score_threshold: float = None,
+        filter_document_id: Optional[str] = None,
+    ) -> list[tuple[LCDocument, float]]:
+        """Asynchronous wrapper to prevent blocking the FastAPI event loop."""
+        import asyncio
+        return await asyncio.to_thread(
+            self.similarity_search, query, top_k, score_threshold, filter_document_id
+        )
 
     # ── Management ──
 

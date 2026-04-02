@@ -175,7 +175,7 @@ class RAGPipeline:
                     db.add(chunk_record)
 
             # ── Step 5: Embed & store in ChromaDB ──
-            embedding_ids = vector_store.index_chunks(chunks, document_meta.id)
+            embedding_ids = await vector_store.index_chunks_async(chunks, document_meta.id)
 
             # Update chunk records with embedding IDs
             for chunk, emb_id in zip(chunks, embedding_ids):
@@ -316,7 +316,7 @@ class RAGPipeline:
         logger.info("query_started", question=request.question[:80], db_type=settings.database_type)
 
         # ── Step 1: Retrieve from vector store ──
-        search_results = vector_store.similarity_search(
+        search_results = await vector_store.similarity_search_async(
             query=request.question,
             top_k=request.top_k,
             score_threshold=request.similarity_threshold,
