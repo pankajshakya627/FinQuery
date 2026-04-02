@@ -168,6 +168,10 @@ class AnswerGenerator:
                 truncated_docs.append(doc)
                 current_len += doc_len
 
+            logger.info("invoking_llm_chain", 
+                        docs_count=len(truncated_docs), 
+                        chars=current_len)
+            
             # Invoke chain
             answer = await self._chain.ainvoke({
                 "input": enhanced_question,
