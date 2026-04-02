@@ -79,7 +79,7 @@ answer = rag.query("Your question here")
 ```mermaid
 flowchart LR
     A[PDF Document] --> B[PDFPlumber Extractor]
-    B --> C[Text + Tables (Markdown)]
+    B --> C[Text + Tables Markdown]
     C --> D[Markdown Header Splitter]
     D --> E[Table-Aware Chunker]
     E --> F[Semantic Embeddings]
@@ -89,9 +89,9 @@ flowchart LR
     I[User Query] --> J[Hybrid Retriever]
     H --> J
     G --> J
-    J --> K[RRF Fusion]
+    J --> K[RRF Fusion Engine]
     K --> L[LLM Generator]
-    L --> M[Answer]
+    L --> M[Final Answer]
 ```
 
 ### 📄 Document Processing Pipeline
@@ -132,18 +132,18 @@ Instead of arbitrary character-based splitting:
 
 ```mermaid
 flowchart TD
-  Q[User Query] --> S1[Semantic Search]
-  Q --> S2[BM25 Keyword Search]
-  
-  S1 --> R1[Result Rank 1, 3, 5...]
-  S2 --> R2[Result Rank 2, 4, 6...]
-  
-  R1 --> RRF[RRF Fusion Engine]
-  R2 --> RRF
-  
-  RRF --> C[Combined Ranked Results]
-  C --> LLM[LLM Answer Generation]
-  LLM --> A[Final Answer]
+    Q[User Query] --> S1[Semantic Search]
+    Q --> S2[BM25 Keyword Search]
+    
+    S1 --> R1[Semantic Ranks 1,3,5...]
+    S2 --> R2[BM25 Ranks 2,4,6...]
+    
+    R1 --> RRF[RRF Fusion Engine]
+    R2 --> RRF
+    
+    RRF --> C[Combined Ranked Results]
+    C --> LLM[LLM Answer Generation]
+    LLM --> A[Final Answer]
 ```
 
 Combines **two complementary retrieval methods** using **Reciprocal Rank Fusion (RRF)**:
