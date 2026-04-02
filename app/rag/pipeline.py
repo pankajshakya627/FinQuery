@@ -323,11 +323,13 @@ class RAGPipeline:
             top_k=request.top_k,
             score_threshold=request.similarity_threshold,
         )
+        logger.info("retrieval_complete", results_found=len(search_results))
 
         # ── Step 2: Build retrieved chunks with metadata ──
         retrieved_chunks = []
         context_docs = []
 
+        logger.info("processing_chunks_metadata", count=len(search_results))
         for doc, score in search_results:
             # Look up document title from DB
             doc_title = await self._get_document_title(
@@ -354,6 +356,7 @@ class RAGPipeline:
                     db, request.conversation_id
                 )
 
+            logger.info("calling_generator", doc_count=len(context_docs))
             answer = await answer_generator.generate(
                 question=request.question,
                 context_docs=context_docs,
